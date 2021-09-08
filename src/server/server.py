@@ -1,9 +1,5 @@
 # Taken from https://github.com/waveform80/pistreaming/blob/master/server.py.
 # Moved classes to it's own files
-import sys
-import io
-import os
-import shutil
 from subprocess import Popen, PIPE
 from string import Template
 from struct import Struct
@@ -19,11 +15,12 @@ from ws4py.server.wsgirefserver import (
     WebSocketWSGIHandler,
     WebSocketWSGIRequestHandler,
 )
-from server.BroadcastOutput import BroadcastOutput
-from server.BroadcastThread import BroadcastThread
+from BroadcastOutput import BroadcastOutput
+from BroadcastThread import BroadcastThread
+from Configuration import Configuration
 
-from server.SteamingWebSocket import StreamingWebSocket
-from server.StreamHttpServer import StreamHttpServer
+from SteamingWebSocket import StreamingWebSocketFactory
+from StreamHttpServer import StreamHttpServer
 
 ###########################################
 # CONFIGURATION
@@ -40,6 +37,22 @@ VFLIP = False
 HFLIP = False
 
 ###########################################
+# Config object so that it's easier to pass around
+CONFIG = Configuration(
+    WIDTH,
+    HEIGHT ,
+    FRAMERATE ,
+    HTTP_PORT ,
+    WS_PORT ,
+    COLOR ,
+    BGCOLOR ,
+    JSMPEG_MAGIC ,
+    JSMPEG_HEADER ,
+    VFLIP,
+    HFLIP
+)
+
+###########################################
 
 def wsFactory():
     WebSocketWSGIHandler.http_version = '1.1'
@@ -47,13 +60,13 @@ def wsFactory():
         '', WS_PORT,
         server_class=WSGIServer,
         handler_class=WebSocketWSGIRequestHandler,
-        app=WebSocketWSGIApplication(handler_cls=StreamingWebSocket))
+        app=WebSocketWSGIApplication(handler_cls=StreamingWebSocketFactory(CONFIG)))
     websocket_server.initialize_websockets_manager()
     websocket_server.initialize_websockets_manager()
     return websocket_server
 
 def httpFactory():
-    return StreamHttpServer();
+    return StreamHttpServer(CONFIG);
 
 def broadcastFactory(camera: picamera.PiCamera):
     return BroadcastOutput(camera);
@@ -61,7 +74,7 @@ def broadcastFactory(camera: picamera.PiCamera):
 def main():
     print('Intializing Camera')
     # ////
-    
+    print(CONFIG);
     with picamera.PiCamera() as camera:
         camera.resolution = (WIDTH, HEIGHT)
         camera.framerate = FRAMERATE
