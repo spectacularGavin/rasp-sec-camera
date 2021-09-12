@@ -9,6 +9,7 @@ class BroadcastThread(Thread):
         self.websocket_server = websocket_server
 
     def run(self):
+        print('in BroadcastThread')
         try:
             while True:
                 buf = self.converter.stdout.read1(32768)

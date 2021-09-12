@@ -62,7 +62,8 @@ def wsFactory():
         handler_class=WebSocketWSGIRequestHandler,
         app=WebSocketWSGIApplication(handler_cls=StreamingWebSocketFactory(CONFIG)))
     websocket_server.initialize_websockets_manager()
-    websocket_server.initialize_websockets_manager()
+    print('Creating websocket at %d' % WS_PORT)
+    # websocket_server.initialize_websockets_manager()
     return websocket_server
 
 def httpFactory():

@@ -39,9 +39,9 @@
 		ctx.fillText('Loading...', canvas.width/2-30, canvas.height/3);
 
 		// Setup the WebSocket connection and start the player
-		/* var client = new WebSocket('ws://' + window.location.hostname + ':${WS_PORT}/'); */
-		/* console.log(client, canvas) */
-		var player = new JSMpeg.Player('ws://' + window.location.hostname + ':${WS_PORT}/', {canvas, disableGl: true});
+		var client = new WebSocket('ws://' + window.location.hostname + ':${WS_PORT}/');
+		var player = new jsmpeg(client, {canvas:canvas});
+		/* var player = new JSMpeg.Player('ws://' + window.location.hostname + ':${WS_PORT}/', {canvas, disableGl: true}); */
 	</script>
 </body>
 </html>
